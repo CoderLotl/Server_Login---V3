@@ -1,0 +1,11 @@
+In a terminal write this:
+
+npm run build
+
+This will start the process of the app compilation.
+
+An alternative is to use:
+
+npm run watch
+
+This will compile as soon as a file is changed and saved.

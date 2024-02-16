@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./main.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+
+        <div id="register" class="el-r20">
+            <form id="register-form" class="el-r20 p10 m20 fcolumn a-center">
+                <input id="user" type="text" placeholder="User" autocomplete="off">
+                <input id="mail" type="email" placeholder="Email" autocomplete="off">
+                <input id="password" type="password" placeholder="Password" autocomplete="off">
+                <div id="buttons-div">
+                    <button id="back-btn" on:click={GoBack}>« Go back</button>
+                    <button id="register-btn" on:click={Register}>Register</button>
+                </div>
+                <div id="r-response">
+                    <p id="r-resp-img" class="goodLotl"></p>
+                    <p id="r-resp-msg"></p>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>

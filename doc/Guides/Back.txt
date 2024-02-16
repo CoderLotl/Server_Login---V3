@@ -1,0 +1,11 @@
+The back of this project runs primordially with Slim and Composer. It's all stored in the App folder.
+
+It's critical to have Composer in the PC used for developing the code in order to keep libraries up to date
+or install or manage any library.
+
+- - - - - - -
+
+The back is designed as an API. It doesn't manage templates nor any kind of view. It listens to requests, and returns a proper answer to whoever made the request.
+The routes to the different pages of the front bounce back the request to the client, checking anything needed to be checked like if the user has properly logged
+or the user rights via 'middlewares', which are layers of functions that are executed before the request can go any further.
+If a middleware is passed, then the execution of the code assigned to the request can proceed. Otherwise, the client is redirected to some error page.

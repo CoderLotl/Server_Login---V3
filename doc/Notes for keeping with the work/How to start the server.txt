@@ -1,0 +1,6 @@
+If you're not using any app like XAMPP/WAMPP, in a terminal write this:
+
+php -S localhost:8000
+
+The number after localhost is the port on which the server will be hosted and listening.
+Otherwise you already know what to do.

@@ -1,0 +1,1 @@
+The configuration of the path is set in vite.config.js, in the property 'base'.

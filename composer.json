@@ -1,0 +1,18 @@
+{
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "classmap": [
+            "app/",
+            "vendor/"
+        ]
+    },
+    "require": {
+        "slim/slim": "*",
+        "slim/psr7": "*",
+        "firebase/php-jwt": "^4.0",
+        "tecnickcom/tcpdf": "^6.6",
+        "phpmailer/phpmailer": "*"
+     }
+ }
