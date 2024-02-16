@@ -41,7 +41,7 @@ class Manager
                     }
                     else
                     {
-                        return self::ReturnResponse($request, $response, 'This user has not verified their account yet.', 400);
+                        return self::ReturnResponse($request, $response, 'The account has not been verified their account yet.', 400);
                     }
                 }
                 else
@@ -115,25 +115,33 @@ class Manager
     {
         $params = self::GetRequest($request);
         $code = $params['code'];
-        $vLinkUser = DataAccess::SelectWhere('users', ['vlink'], [$code]);        
 
-        if($vLinkUser)
+        if(strlen($code) != 10)
         {
-            $vLinkUser = $vLinkUser[0];
-            if($vLinkUser['verified'] == 0)
+            return self::ReturnResponse($request, $response, "The provided code is not valid.", 400);
+        }
+        else
+        {                        
+            $vLinkUser = DataAccess::SelectWhere('users', ['vlink'], [$code]);        
+
+            if($vLinkUser)
             {
-                DataAccess::Update('users', ['verified'], [1], 'vlink', $vLinkUser['vlink']);
-                return self::ReturnResponse($request, $response, 'Account verified! You can now log in.', 200);
+                $vLinkUser = $vLinkUser[0];
+                if($vLinkUser['verified'] == 0)
+                {
+                    DataAccess::Update('users', ['verified'], [1], 'vlink', $vLinkUser['vlink']);
+                    return self::ReturnResponse($request, $response, 'Account verified! You can now log in.', 200);
+                }
+                else
+                {
+                    return self::ReturnResponse($request, $response, "That account has already been verified.", 400);
+                }
             }
             else
             {
-                return self::ReturnResponse($request, $response, "That account has already been verified.", 400);
-            }
+                return self::ReturnResponse($request, $response, "The entried code doesn't exist.", 400);
+            }        
         }
-        else
-        {
-            return self::ReturnResponse($request, $response, "The entried code doesn't exist.", 400);
-        }        
     }
 
     // - - - - - - - - - - - - - PRIVATE FUNCTIONS

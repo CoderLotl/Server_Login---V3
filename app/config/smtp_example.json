@@ -1,0 +1,7 @@
+{
+    "SMTP_HOST": "smtp.<something>.com",
+    "SMTP_USERNAME": "<mail_account_username>",
+    "SMTP_PASSWORD": "<mail_account_password>",
+    "SMTP_FROM": "<sender_mail>",
+    "SMTP_SENDER": "<sender_name>"
+}

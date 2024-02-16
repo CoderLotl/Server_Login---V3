@@ -10,31 +10,24 @@ export async function Verify()
     let content = document.createElement('p');
     vContent.appendChild(content);
     
-    if(code.length != 10)
+    let response = await DataAccess.postData('http://localhost:8000/verify_account', {code: code});
+    if(response)
     {
-        content.textContent = 'Nope';
-    }
-    else
-    {
-        let response = await DataAccess.postData('http://localhost:8000/verify_account', {code: code});
-        if(response)
-        {
-            let resp = await response.json();
+        let resp = await response.json();
 
-            if(response.ok)
-            {                
-                content.textContent = resp['response'];                
-            }
-            else
-            {
-                content.textContent = 'Error: ' + resp['response'];
-            }
+        if(response.ok)
+        {                
+            content.textContent = resp['response'];                
         }
         else
         {
-            let message = 'Error contacting the server.';
-            console.log(serverResponse);
-            content.textContent = message;
+            content.textContent = 'Error: ' + resp['response'];
         }
+    }
+    else
+    {
+        let message = 'Error contacting the server.';
+        console.log(serverResponse);
+        content.textContent = message;
     }
 }
