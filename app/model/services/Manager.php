@@ -27,9 +27,8 @@ class Manager
             }
 
             $user = $user[0];
-            $passwordMatches = password_verify($password, $user['password']);
 
-            if(!$passwordMatches) // We check if the password is right.
+            if(!password_verify($password, $user['password']) // We check if the password is right.
             {
                 return self::ReturnResponse($request, $response, 'Invalid password.', 400);
             }
