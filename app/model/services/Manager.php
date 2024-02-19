@@ -116,28 +116,22 @@ class Manager
         {
             return self::ReturnResponse($request, $response, "The provided code is not valid.", 400);
         }
-        else
-        {                        
-            $vLinkUser = DataAccess::SelectWhere('users', ['vlink'], [$code]);        
+        
+        $vLinkUser = DataAccess::SelectWhere('users', ['vlink'], [$code]);        
 
-            if($vLinkUser)
-            {
-                $vLinkUser = $vLinkUser[0];
-                if($vLinkUser['verified'] == 0)
-                {
-                    DataAccess::Update('users', ['verified'], [1], 'vlink', $vLinkUser['vlink']);
-                    return self::ReturnResponse($request, $response, 'Account verified! You can now log in.', 200);
-                }
-                else
-                {
-                    return self::ReturnResponse($request, $response, "That account has already been verified.", 400);
-                }
-            }
-            else
-            {
-                return self::ReturnResponse($request, $response, "The entried code doesn't exist.", 400);
-            }        
+        if(!$vLinkUser)
+        {
+            return self::ReturnResponse($request, $response, "The entried code doesn't exist.", 400);
         }
+
+        $vLinkUser = $vLinkUser[0];
+        if($vLinkUser['verified'] == 1)
+        {
+            return self::ReturnResponse($request, $response, "That account has already been verified.", 400);
+        }
+        
+        DataAccess::Update('users', ['verified'], [1], 'vlink', $vLinkUser['vlink']);
+        return self::ReturnResponse($request, $response, 'Account verified! You can now log in.', 200);
     }
 
     // - - - - - - - - - - - - - PRIVATE FUNCTIONS
