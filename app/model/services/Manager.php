@@ -22,37 +22,33 @@ class Manager
             $user = DataAccess::SelectWhere('users', ['user'], [$params['user']]);            
             $payload = '';
             
-            if($user) // We check if the user is right.
-            {
-                $user = $user[0];
-                if(password_verify($password, $user['password'])) // We check if the password is right.
-                {
-                    if($user['verified'] == 1) // We check if the user is a verified account.
-                    {
-                        // We create the token
-                        $jwt = AuthJWT::NewToken($params['user']);
-                        $expireTime = time() + 3600;                   
-    
-                        $payload = json_encode(['token' => $jwt]);
-    
-                        $response->getBody()->write(json_encode(['response' => $payload]));
-                        return $response->withHeader('Set-Cookie',
-                        "token=$jwt; Path=/; Expires=" . gmdate('D, d M Y H:i:s T', $expireTime) . "; HttpOnly; Secure; SameSite=Strict"); 
-                    }
-                    else
-                    {
-                        return self::ReturnResponse($request, $response, 'The account has not been verified their account yet.', 400);
-                    }
-                }
-                else
-                {
-                    return self::ReturnResponse($request, $response, 'Invalid password.', 400);
-                }
-            }
-            else
-            {
+            if(!$user) {
                 return self::ReturnResponse($request, $response, 'Invalid user or password.', 400);
-            }            
+            }
+
+            $user = $user[0];
+            $passwordMatches = password_verify($password, $user['password']);
+
+            if(!$passwordMatches) // We check if the password is right.
+            {
+                return self::ReturnResponse($request, $response, 'Invalid password.', 400);
+            }
+
+            if(!$user['verified'] == 1) // We check if the user is a verified account.
+            {
+                return self::ReturnResponse($request, $response, 'The account has not been verified their account yet.', 400);
+            }
+
+            // We create the token
+            $jwt = AuthJWT::NewToken($params['user']);
+            $expireTime = time() + 3600;                   
+
+            $payload = json_encode(['token' => $jwt]);
+
+            $response->getBody()->write(json_encode(['response' => $payload]));
+            return $response->withHeader('Set-Cookie',
+            "token=$jwt; Path=/; Expires=" . gmdate('D, d M Y H:i:s T', $expireTime) . "; HttpOnly; Secure; SameSite=Strict");
+            
         }
         catch(Exception $e)
         {
