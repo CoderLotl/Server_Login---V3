@@ -22,37 +22,32 @@ class Manager
             $user = DataAccess::SelectWhere('users', ['user'], [$params['user']]);            
             $payload = '';
             
-            if($user) // We check if the user is right.
-            {
-                $user = $user[0];
-                if(password_verify($password, $user['password'])) // We check if the password is right.
-                {
-                    if($user['verified'] == 1) // We check if the user is a verified account.
-                    {
-                        // We create the token
-                        $jwt = AuthJWT::NewToken($params['user']);
-                        $expireTime = time() + 3600;                   
-    
-                        $payload = json_encode(['token' => $jwt]);
-    
-                        $response->getBody()->write(json_encode(['response' => $payload]));
-                        return $response->withHeader('Set-Cookie',
-                        "token=$jwt; Path=/; Expires=" . gmdate('D, d M Y H:i:s T', $expireTime) . "; HttpOnly; Secure; SameSite=Strict"); 
-                    }
-                    else
-                    {
-                        return self::ReturnResponse($request, $response, 'The account has not been verified their account yet.', 400);
-                    }
-                }
-                else
-                {
-                    return self::ReturnResponse($request, $response, 'Invalid password.', 400);
-                }
-            }
-            else
-            {
+            if(!$user) {
                 return self::ReturnResponse($request, $response, 'Invalid user or password.', 400);
-            }            
+            }
+
+            $user = $user[0];
+
+            if(!password_verify($password, $user['password']) // We check if the password is right.
+            {
+                return self::ReturnResponse($request, $response, 'Invalid password.', 400);
+            }
+
+            if(!$user['verified'] == 1) // We check if the user is a verified account.
+            {
+                return self::ReturnResponse($request, $response, 'The account has not been verified their account yet.', 400);
+            }
+
+            // We create the token
+            $jwt = AuthJWT::NewToken($params['user']);
+            $expireTime = time() + 3600;                   
+
+            $payload = json_encode(['token' => $jwt]);
+
+            $response->getBody()->write(json_encode(['response' => $payload]));
+            return $response->withHeader('Set-Cookie',
+            "token=$jwt; Path=/; Expires=" . gmdate('D, d M Y H:i:s T', $expireTime) . "; HttpOnly; Secure; SameSite=Strict");
+            
         }
         catch(Exception $e)
         {
@@ -120,28 +115,22 @@ class Manager
         {
             return self::ReturnResponse($request, $response, "The provided code is not valid.", 400);
         }
-        else
-        {                        
-            $vLinkUser = DataAccess::SelectWhere('users', ['vlink'], [$code]);        
+        
+        $vLinkUser = DataAccess::SelectWhere('users', ['vlink'], [$code]);        
 
-            if($vLinkUser)
-            {
-                $vLinkUser = $vLinkUser[0];
-                if($vLinkUser['verified'] == 0)
-                {
-                    DataAccess::Update('users', ['verified'], [1], 'vlink', $vLinkUser['vlink']);
-                    return self::ReturnResponse($request, $response, 'Account verified! You can now log in.', 200);
-                }
-                else
-                {
-                    return self::ReturnResponse($request, $response, "That account has already been verified.", 400);
-                }
-            }
-            else
-            {
-                return self::ReturnResponse($request, $response, "The entried code doesn't exist.", 400);
-            }        
+        if(!$vLinkUser)
+        {
+            return self::ReturnResponse($request, $response, "The entried code doesn't exist.", 400);
         }
+
+        $vLinkUser = $vLinkUser[0];
+        if($vLinkUser['verified'] == 1)
+        {
+            return self::ReturnResponse($request, $response, "That account has already been verified.", 400);
+        }
+        
+        DataAccess::Update('users', ['verified'], [1], 'vlink', $vLinkUser['vlink']);
+        return self::ReturnResponse($request, $response, 'Account verified! You can now log in.', 200);
     }
 
     // - - - - - - - - - - - - - PRIVATE FUNCTIONS
